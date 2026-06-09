@@ -106,7 +106,7 @@ const SignUp = () => {
 
   if(verifying) {
     return (
-      <div className="flex flex-col justify-center items-center w-full min-h-dvh px-10 max-sm:px-5 py-10">
+      <div className="flex justify-center items-center w-full min-h-dvh px-10 max-sm:px-5 py-10">
         <Card className="max-w-md w-full rounded-md max-sm:max-w-sm">
           <CardHeader>
             <CardTitle>Verification</CardTitle>

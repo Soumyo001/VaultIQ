@@ -2,7 +2,7 @@ import { SignOutButton } from "@clerk/nextjs"
 
 const Home = () => {
   return (
-    <div>
+    <div className="flex justify-center items-center w-full">
         <SignOutButton/>
     </div>
   )

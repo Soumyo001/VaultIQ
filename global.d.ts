@@ -19,8 +19,9 @@ declare module "*.module.sass" {
 
 declare global {
     interface CustomJwtSessionClaims {
-        metadata: {
-            role?: "admin" | "user";
-        };
+      metadata?: {
+        role?:        'admin' | 'user';
+        isOnboarded?: boolean;
+      };
     }
 }

@@ -3,20 +3,30 @@ import { NextResponse } from 'next/server';
 
 const isPublicRoute = createRouteMatcher(['/sign-in(.*)', '/sign-up(.*)']);
 const isAdminRoute = createRouteMatcher(['/admin(.*)']);
+const isOnboardingRoute = createRouteMatcher(['/onboarding(.*)']);
 
 export default clerkMiddleware(async (auth, req) => {
   const { userId, sessionClaims } = await auth();
   const role = sessionClaims?.metadata?.role;
+  const isOnboarded = sessionClaims?.metadata?.isOnboarded;
 
+  // user not logged in
   if(!userId && !isPublicRoute(req)) {
     return NextResponse.redirect(new URL('/sign-in', req.url));
   }
 
+  // user logged in and in public route
   if(userId && isPublicRoute(req)) {
     if(role === "admin") return NextResponse.redirect(new URL('/admin/home', req.url));
     return NextResponse.redirect(new URL('/home', req.url));
   }
 
+  // user logged in, not onboarded and not in onboarding route
+  if(userId && role === "user" && !isOnboarded && !isOnboardingRoute(req)) {
+    return NextResponse.redirect(new URL('/onboarding', req.url));
+  }
+
+  // user logged in, onboarded, not admin and in admin routes
   if(userId && role !== "admin" && isAdminRoute(req)) {
     return NextResponse.redirect(new URL('/home', req.url));
   }

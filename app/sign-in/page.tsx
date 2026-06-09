@@ -53,7 +53,7 @@ const SignIn = () => {
   }
 
   return (
-    <div className="flex flex-col justify-center items-center w-full min-h-dvh px-10 max-sm:px-5 py-10">
+    <div className="flex justify-center items-center w-full min-h-dvh px-10 max-sm:px-5 py-10">
       <Card className="max-w-md w-full max-sm:max-w-sm rounded-md">
         <CardHeader>
           <CardTitle>Sign In</CardTitle>
@@ -67,6 +67,7 @@ const SignIn = () => {
                 <Input
                   {...register("identifier")}
                   id="identifier"
+                  type="text"
                   placeholder="username or email"
                   className="rounded-md"
                   required
@@ -92,8 +93,8 @@ const SignIn = () => {
                     className="absolute right-2 top-1/2 -translate-y-1/2 bg-none text-muted-foreground cursor-pointer"
                   >
                     {showPassword
-                        ? <Eye className="w-4 h-4"/>
-                        : <EyeOff className="w-4 h-4"/>}
+                      ? <Eye className="w-4 h-4"/>
+                      : <EyeOff className="w-4 h-4"/>}
                   </button>
                 </div>
                 {errors.password && <p className="text-sm text-destructive">
