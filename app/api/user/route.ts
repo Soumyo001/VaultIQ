@@ -62,7 +62,7 @@ export const POST = async(req: Request) => {
                         role: 'user'
                     },
                 },
-                {new: true}
+                {new: true, runValidators: true}
             ).lean<UserType>();
         } else {
             syncedUser = await User.create({
