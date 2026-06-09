@@ -20,6 +20,7 @@ export default clerkMiddleware(async (auth, req) => {
     return NextResponse.redirect(new URL('/onboarding', req.url));
   }
 
+  // user logged in, onboarded and in onboarding/public/api routes
   if(userId && role === "user" && isOnboarded && (isOnboardingRoute(req) || isPublicRoute(req) || isAdminRoute(req))) {
     return NextResponse.redirect(new URL('/home', req.url));
   }
@@ -30,12 +31,8 @@ export default clerkMiddleware(async (auth, req) => {
     return NextResponse.redirect(new URL('/home', req.url));
   }
 
-  // user logged in, onboarded, not admin and in admin routes
-  if(userId && role !== "admin" && isAdminRoute(req)) {
-    return NextResponse.redirect(new URL('/home', req.url));
-  }
-
-  if(userId && role === "admin" && !isAdminRoute(req)) {
+  // admin anywhere outside admin routes -> admin dashboard (skip onboarding + public, already handled)
+  if(userId && role === "admin" && !isAdminRoute(req) && !isOnboardingRoute(req) && !isPublicRoute(req) && !isApiRoute(req)) {
     return NextResponse.redirect(new URL('/admin/home', req.url));
   }
 
