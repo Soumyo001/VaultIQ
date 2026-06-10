@@ -10,29 +10,29 @@ export default clerkMiddleware(async (auth, req) => {
   const { userId, sessionClaims } = await auth();
   const role = sessionClaims?.metadata?.role;
   const isOnboarded = sessionClaims?.metadata?.isOnboarded;
+  console.log(typeof isOnboarded, isOnboarded); 
 
   // user not logged in
   if(!userId && !isPublicRoute(req)) {
     return NextResponse.redirect(new URL('/sign-in', req.url));
   }
   // user logged in, not onboarded and not in onboarding route
-  if(userId && role === "user" && !isOnboarded && !isOnboardingRoute(req) && !isApiRoute(req)) {
+  if(userId && role !== "admin" && !isOnboarded && !isOnboardingRoute(req) && !isApiRoute(req)) {
     return NextResponse.redirect(new URL('/onboarding', req.url));
   }
 
-  // user logged in, onboarded and in onboarding/public/api routes
-  if(userId && role === "user" && isOnboarded && (isOnboardingRoute(req) || isPublicRoute(req) || isAdminRoute(req))) {
+  // user logged in, onboarded and in onboarding/public/admin routes
+  if(userId && role !== "admin" && isOnboarded && (isOnboardingRoute(req) || isPublicRoute(req) || isAdminRoute(req) || isApiRoute(req))) {
     return NextResponse.redirect(new URL('/home', req.url));
   }
 
   // user logged in and in public route
-  if(userId && isPublicRoute(req)) {
-    if(role === "admin") return NextResponse.redirect(new URL('/admin/home', req.url));
-    return NextResponse.redirect(new URL('/home', req.url));
+  if(userId && role === "admin" && (isPublicRoute(req) || isOnboardingRoute(req))) {
+    return NextResponse.redirect(new URL('/admin/home', req.url));
   }
 
-  // admin anywhere outside admin routes -> admin dashboard (skip onboarding + public, already handled)
-  if(userId && role === "admin" && !isAdminRoute(req) && !isOnboardingRoute(req) && !isPublicRoute(req) && !isApiRoute(req)) {
+  // admin anywhere outside admin routes -> admin dashboard
+  if(userId && role === "admin" && !isAdminRoute(req) && !isApiRoute(req)) {
     return NextResponse.redirect(new URL('/admin/home', req.url));
   }
 
