@@ -1,4 +1,4 @@
-import User from "@/lib/models/user.schema";
+import User from "@/lib/db/models/user.schema";
 import { UserType } from "@/lib/types";
 import { NextResponse } from "next/server";
 import { clerkClient } from "@clerk/nextjs/server";
