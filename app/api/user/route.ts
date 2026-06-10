@@ -17,30 +17,58 @@ export const GET = async() => {
             );
         }
         let user: UserType|null = null;
+        await connect();
         user = await User.findOne({clerk_id: userId}).lean<UserType>();
-        if(!user) {
-            const client = await clerkClient();
-            const clerkUser = await client.users.getUser(userId);
-            const email = clerkUser.emailAddresses[0]?.emailAddress;
-            const username = clerkUser.username;
-            if(!email || !username) {
-                return NextResponse.json(
-                    {message: "Clerk auth missing email or username"}, {status: 422}
-                );
-            }
+        if(user) {
+            return NextResponse.json(
+                {message: "User already synced", user}, {status: 200}
+            );
+        }
 
-            const timezone = (clerkUser.publicMetadata as any).timezone ?? DEFAULT_TIMEZONE;
-            const currency = (clerkUser.publicMetadata as any).currency ?? await guessCurrency();
+        const client = await clerkClient();
+        const clerkUser = await client.users.getUser(userId);
+        const email = clerkUser.emailAddresses[0]?.emailAddress;
+        const username = clerkUser.username;
+        if(!email || !username) {
+            return NextResponse.json(
+                {message: "Clerk auth missing email address or username"}, {status: 422}
+            );
+        }
+        const timezone = (clerkUser.publicMetadata as any).timezone ?? DEFAULT_TIMEZONE;
+        const currency = (clerkUser.publicMetadata as any).currency ?? await guessCurrency();
+        
+        const orphaned = await User.findOne({
+            $or: [{email}, {username}]
+        }).lean<UserType>();
+
+        if(orphaned) {
+            user = await User.findByIdAndUpdate(
+                orphaned._id,
+                {
+                    $set: {
+                        clerk_id: userId,
+                        email,
+                        username,
+                        timezone,
+                        currency,
+                        role: 'user'
+                    }
+                },
+                {new: true, runValidators: true}
+            ).lean<UserType>();
+        } else {
             user = await User.create({
-                clerk_id: userId,
-                email,
-                username,
-                timezone,
-                currency
+               clerk_id: userId,
+               email,
+               username,
+               timezone,
+               currency,
+               role: 'user'
             });
         }
+
         return NextResponse.json(
-            {message: "User account synced", user}, {status: 200}
+            {message: "User account synced", user}, {status: 201}
         );
     } catch (err: any) {
         return NextResponse.json(
@@ -112,6 +140,12 @@ export const POST = async(req: Request) => {
                     role: 'user'
                 });
             }
+        } else {
+            syncedUser = await User.findByIdAndUpdate(
+                alreadySynced._id,
+                { $set: {timezone, currency} },
+                { new: true, runValidators: true }
+            ).lean<UserType>();
         }
 
         await client.users.updateUserMetadata(userId, {
