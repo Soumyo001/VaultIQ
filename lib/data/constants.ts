@@ -1,11 +1,11 @@
-export type Currency = {
+export type CurrencyType = {
     code: string;
     name: string;
     symbol: string;
     region: string;
 };
 
-export const SUPPORTED_CURRENCIES: Currency[] = [
+export const SUPPORTED_CURRENCIES: CurrencyType[] = [
     { code: "USD", name: "US Dollar", symbol: "$", region: "Americas" },
     { code: "EUR", name: "Euro", symbol: "€", region: "Europe" },
     { code: "GBP", name: "British Pound", symbol: "£", region: "Europe" },

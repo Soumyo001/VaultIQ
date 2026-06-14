@@ -13,7 +13,7 @@ export default clerkMiddleware(async (auth, req) => {
   console.log(typeof isOnboarded, isOnboarded); 
 
   // user not logged in
-  if(!userId && !isPublicRoute(req)) {
+  if(!userId && !isPublicRoute(req) && !isApiRoute(req)) {
     return NextResponse.redirect(new URL('/sign-in', req.url));
   }
   // user logged in, not onboarded and not in onboarding route
@@ -22,7 +22,7 @@ export default clerkMiddleware(async (auth, req) => {
   }
 
   // user logged in, onboarded and in onboarding/public/admin routes
-  if(userId && role !== "admin" && isOnboarded && (isOnboardingRoute(req) || isPublicRoute(req) || isAdminRoute(req) || isApiRoute(req))) {
+  if(userId && role !== "admin" && isOnboarded && (isOnboardingRoute(req) || isPublicRoute(req) || isAdminRoute(req))) {
     return NextResponse.redirect(new URL('/home', req.url));
   }
 

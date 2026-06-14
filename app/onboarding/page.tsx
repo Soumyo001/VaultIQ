@@ -1,9 +1,10 @@
-import React from 'react'
+import { guessCurrency } from "@/lib/engines/currency-detection-engine";
+import OnboardingForm from "@/components/onboarding-form";
+import { Suspense } from "react";
 
-const Onboarding = () => {
-  return (
-    <div>Onboarding</div>
-  )
+const OnboardingPage = async () => {
+  const currency = await guessCurrency();
+  return <OnboardingForm initialCurrency={currency}/>
 }
 
-export default Onboarding
+export default OnboardingPage;

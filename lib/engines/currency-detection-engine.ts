@@ -15,7 +15,7 @@ function readCountry(h: Headers): string|null {
                     ? atob(nf)
                     : Buffer.from(nf, "base64").toString("utf-8");
             const parsed = JSON.parse(decoded);
-            return parsed?.country?.code?.toUpperCase();
+            return parsed?.country?.code?.toUpperCase() ?? null;
         } catch {
             return null;
         }
