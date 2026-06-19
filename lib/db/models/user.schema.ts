@@ -1,11 +1,12 @@
+import { CurrencyCode, DEFAULT_CURRENCY, DEFAULT_TIMEZONE, SUPPORTED_CODES } from "@/lib/utils/currency-util/currency";
 import { Schema, models, model, Document } from "mongoose";
 
 export interface IUser extends Document {
-    clerk_id:  string;
+    clerk_id?:  string;
     email:     string;
     username:  string;
     role:      'admin' | 'user';
-    currency:  string;
+    currency:  CurrencyCode;
     timezone:  string;
     createdAt: string;
     updatedAt: string;
@@ -13,12 +14,12 @@ export interface IUser extends Document {
 
 const UserSchema = new Schema<IUser>(
     {
-        clerk_id: {type: String, required: true, unique: true},
+        clerk_id: {type: String, sparse: true, unique: true},
         email:    {type: String, required: true, unique: true, lowercase: true, trim: true},
         username: {type: String, required: true, unique: true, trim: true},
         role:     {type: String, enum: ['admin', 'user'], default: 'user'},
-        currency: {type: String, default: 'BDT' },
-        timezone: {type: String, default: 'UTC'}
+        currency: {type: String, enum: SUPPORTED_CODES, default: DEFAULT_CURRENCY },
+        timezone: {type: String, default: DEFAULT_TIMEZONE}
     },
     {
         timestamps: true,

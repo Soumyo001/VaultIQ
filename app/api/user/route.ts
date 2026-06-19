@@ -3,9 +3,9 @@ import { UserType } from "@/lib/types";
 import { NextResponse } from "next/server";
 import { clerkClient } from "@clerk/nextjs/server";
 import { auth } from "@clerk/nextjs/server";
-import { SyncSchema } from "@/lib/validators/payload_validator/sync-user.schema";
+import { SyncSchema } from "@/lib/validators/payload_validator/onboarding.schema";
 import connect from "@/lib/db";
-import { DEFAULT_TIMEZONE } from "@/lib/data/constants";
+import { DEFAULT_CURRENCY, DEFAULT_TIMEZONE } from "@/lib/utils/currency-util/currency";
 import { guessCurrency } from "@/lib/engines/currency-detection-engine";
 
 export const GET = async() => {
@@ -35,10 +35,13 @@ export const GET = async() => {
             );
         }
         const timezone = (clerkUser.publicMetadata as any).timezone ?? DEFAULT_TIMEZONE;
-        const currency = (clerkUser.publicMetadata as any).currency ?? await guessCurrency();
+        const currency = (clerkUser.publicMetadata as any).currency ?? await guessCurrency() ?? DEFAULT_CURRENCY;
         
         const orphaned = await User.findOne({
-            $or: [{email}, {username}]
+            $and: [
+              { $or: [{ email }, { username }] },
+              { $or: [{ clerk_id: { $exists: false } }, { clerk_id: null }] },
+            ],
         }).lean<UserType>();
 
         if(orphaned) {
@@ -99,10 +102,10 @@ export const POST = async(req: Request) => {
 
         let syncedUser: UserType|null = null;
         const client = await clerkClient();
+        const clerkUser = await client.users.getUser(userId);
         await connect();
         const alreadySynced = await User.findOne({clerk_id: userId}).lean<UserType>();
-        if(!alreadySynced) {
-            const clerkUser = await client.users.getUser(userId);
+        if(!alreadySynced) {            
             const email = clerkUser.emailAddresses[0]?.emailAddress;
             const username = clerkUser.username;
             if(!email || !username) {
@@ -112,7 +115,10 @@ export const POST = async(req: Request) => {
             }
 
             const orphaned = await User.findOne({
-                $or: [{email}, {username}]
+                $and: [
+                  { $or: [{ email }, { username }] },
+                  { $or: [{ clerk_id: { $exists: false } }, { clerk_id: null }] },
+                ],
             }).lean<UserType>();
 
             if(orphaned) {
@@ -128,7 +134,7 @@ export const POST = async(req: Request) => {
                             role: 'user'
                         },
                     },
-                    {new: true, runValidators: true}
+                    {returnDocument: "after", runValidators: true}
                 ).lean<UserType>();
             } else {
                 syncedUser = await User.create({
@@ -150,7 +156,7 @@ export const POST = async(req: Request) => {
 
         await client.users.updateUserMetadata(userId, {
             publicMetadata: {
-                role: 'user',
+                ...clerkUser.publicMetadata,
                 isOnboarded: true,
                 timezone,
                 currency
@@ -162,7 +168,7 @@ export const POST = async(req: Request) => {
     } catch (err: any) {
         if(err.code === 11000) {
             return NextResponse.json(
-                {message: "User already exists"}, {status: 409}
+                {message: "User with same data already exists"}, {status: 409}
             );
         }
         return NextResponse.json(

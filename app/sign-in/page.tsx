@@ -44,8 +44,9 @@ const SignIn = () => {
       const result = await signIn.create({identifier: data.identifier, password: data.password});
       if(result.status === "complete") {
         await setActive({session: result.createdSessionId});
+        await fetch('/api/user', { cache: 'no-store' });
       } else {
-        setAuthError("Authentication failed. please try again");
+        setAuthError(`Authentication failed. please try again. stauts: ${result.status}`);
       }
     } catch (err: any) {
       setAuthError(err.errors?.[0]?.longMessage ?? err.message);

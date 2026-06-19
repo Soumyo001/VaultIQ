@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import countryToCurrency, { Countries } from "country-to-currency";
-import { SUPPORTED_CODES } from "../data/constants";
+import { CurrencyCode, SUPPORTED_CODES_SET } from "../utils/currency-util/currency";
 
 function readCountry(h: Headers): string|null {
     const direct = h.get("x-vercel-ip-country")
@@ -23,10 +23,14 @@ function readCountry(h: Headers): string|null {
     return null;
 }
 
-export async function guessCurrency() {
+function isSupportedCode(code: string): code is CurrencyCode {
+    return SUPPORTED_CODES_SET.has(code as CurrencyCode);
+}
+
+export async function guessCurrency(): Promise<CurrencyCode|null> {
     const countryCode = readCountry(await headers());
     if(!countryCode) return null;
 
     const currency = countryToCurrency[countryCode as Countries];
-    return currency && SUPPORTED_CODES.has(currency) ? currency : null;
+    return currency && isSupportedCode(currency) ? currency : null;
 }
