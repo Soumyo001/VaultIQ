@@ -2,7 +2,7 @@ import { CurrencyCode, DEFAULT_CURRENCY, DEFAULT_TIMEZONE, SUPPORTED_CODES } fro
 import { Schema, models, model, Document } from "mongoose";
 
 export interface IUser extends Document {
-    clerk_id?:  string;
+    clerk_id?: string;
     email:     string;
     username:  string;
     role:      'admin' | 'user';

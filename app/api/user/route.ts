@@ -156,7 +156,7 @@ export const POST = async(req: Request) => {
 
         await client.users.updateUserMetadata(userId, {
             publicMetadata: {
-                ...clerkUser.publicMetadata,
+                role: 'user',
                 isOnboarded: true,
                 timezone,
                 currency
