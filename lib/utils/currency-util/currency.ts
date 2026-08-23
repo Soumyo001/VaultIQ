@@ -39,7 +39,7 @@ export const SUPPORTED_CODES = SUPPORTED_CURRENCIES.map(c => c.code) as [Currenc
 export const POPULAR_CODES: readonly CurrencyCode[] = ["USD", "EUR", "GBP", "SGD", "JPY", "AUD", "CAD", "INR"];
 
 export const DEFAULT_CURRENCY: CurrencyCode = "USD";
-export const DEFAULT_TIMEZONE = "UTC";
+export const DEFAULT_TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 export const SUPPORTED_CODES_SET: ReadonlySet<CurrencyCode> = new Set<CurrencyCode>(SUPPORTED_CURRENCIES.map(c => c.code));
 export const CODE_CURRENCY = new Map<CurrencyCode, Readonly<CurrencyType>>(SUPPORTED_CURRENCIES.map(c => [c.code, c]));

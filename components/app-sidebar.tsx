@@ -27,7 +27,6 @@ import {
   LogOut,
   PieChart,
   Settings,
-  SplitSquareHorizontal
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -46,8 +45,8 @@ const AppSidebar = () => {
           <div className="w-8 h-8 shrink-0 flex items-center justify-center rounded-md bg-blue-100 dark:bg-blue-950">
             <PieChart className="w-4 h-4 text-blue-600 dark:text-blue-400"/>
           </div>
-          <span className="text-sm text-slate-400 font-medium">
-            BudgetFlow
+          <span className="text-sm font-medium">
+            VaultIQ
           </span>
         </div>
       </SidebarHeader>
@@ -127,7 +126,7 @@ const AppSidebar = () => {
                   <ChevronDown className="ml-auto w-3 h-3 text-muted-foreground shrink-0"/>
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" side="right" className="rounded-md">
+              <DropdownMenuContent align="start" side="top" className="rounded-md">
                 <DropdownMenuItem asChild>
                   <Link href="/settings" className="cursor-pointer">
                     <Settings className="w-4 h-4 mr-2"/>
