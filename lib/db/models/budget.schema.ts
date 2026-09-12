@@ -2,7 +2,7 @@ import mongoose, { Schema, models, model, Document } from "mongoose";
 
 export interface IBudget extends Document {
     user_id: mongoose.Types.ObjectId;
-    category_id?: mongoose.Types.ObjectId | null;
+    category_id: mongoose.Types.ObjectId | null;
     month: number;
     year: number;
     limit: number;
@@ -15,7 +15,7 @@ export interface IBudget extends Document {
 
 const BudgetSchema = new Schema<IBudget>({
     user_id: {type: Schema.Types.ObjectId, ref: "User", required: true},
-    category_id: {type: Schema.Types.ObjectId, ref: "Category"},
+    category_id: {type: Schema.Types.ObjectId, ref: "Category", default: null},
     month: {type: Number, required: true, min: 1, max: 12},
     year: {type: Number, required: true},
     limit: {type: Number, required: true, min: 0},
