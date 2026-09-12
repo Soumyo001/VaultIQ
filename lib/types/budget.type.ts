@@ -1,8 +1,7 @@
 export type BudgetType = {
     _id: string;
     user_id: string;
-    category_id?: string;
-    account_id?: string;
+    category_id?: string | null;
     month: number;
     year: number;
     limit: number;
