@@ -7,5 +7,5 @@ export type BudgetType = {
     limit: number;
     alert_at: number;
     spent: number;
-    alert_sent_at?: Date;
-}
+    alert_sent_at?: string;
+};
