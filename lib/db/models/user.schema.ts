@@ -14,7 +14,7 @@ export interface IUser extends Document {
 
 const UserSchema = new Schema<IUser>(
     {
-        clerk_id: {type: String, sparse: true, unique: true},
+        clerk_id: {type: String, sparse: true, unique: true}, // sparse means if present then must be unique, if not then no problem. sparse is not indexed
         email:    {type: String, required: true, unique: true, lowercase: true, trim: true},
         username: {type: String, required: true, unique: true, trim: true},
         role:     {type: String, enum: ['admin', 'user'], default: 'user'},

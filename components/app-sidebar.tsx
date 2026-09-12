@@ -55,7 +55,7 @@ const AppSidebar = () => {
           <SidebarGroup key={group.label}>
             <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
             <SidebarGroupContent>
-              <SidebarMenu>
+              <SidebarMenu className="gap-1">
                 {group.items.map(item => {
                   const isSoon = item.soon;
                   const Icon = item.icon;

@@ -7,8 +7,8 @@ const Layout = ({children}: {children: React.ReactNode}) => {
     <SidebarProvider>
         <AppSidebar/>
         <div className='flex-1 min-w-0 w-full flex flex-col'>
-            <SidebarTrigger/>
-            {children}
+          <SidebarTrigger/>
+          {children}
         </div>
     </SidebarProvider>
   )
