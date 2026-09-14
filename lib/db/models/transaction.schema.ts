@@ -34,7 +34,7 @@ export interface ITransaction extends Document {
 const TransactionSchema = new Schema<ITransaction>({
     user_id: {type: Schema.Types.ObjectId, ref: "User", required: true},
     account_id: {type: Schema.Types.ObjectId, ref: "Account", required: true},
-    category_id: {type: Schema.Types.ObjectId, ref: "Category", required: true},
+    category_id: {type: Schema.Types.ObjectId, ref: "Category", required: true}, // not indexed but might need it if query transactions for a specific category
     type: {type: String, enum: ["income", "expense", "transfer"], required: true},
     amount: {type: Number, required: true, min: 0},
     description: {type: String, required: true},
