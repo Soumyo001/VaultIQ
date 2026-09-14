@@ -8,8 +8,8 @@ export interface IUser extends Document {
     role:      'admin' | 'user';
     currency:  CurrencyCode;
     timezone:  string;
-    createdAt: string;
-    updatedAt: string;
+    createdAt: Date;
+    updatedAt: Date;
 };
 
 const UserSchema = new Schema<IUser>(

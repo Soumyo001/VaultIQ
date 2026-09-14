@@ -1,14 +1,18 @@
 import z from "zod";
-import { SUPPORTED_CODES, CurrencyCode } from "@/lib/utils/currency-util/currency";
+import { SUPPORTED_CODES } from "@/lib/utils/currency-util/currency";
 
 export const CreateAccountSchema = z.object({
-    name: z.string().trim().min(1, {message: "Account name is required"}),
+    name: z.string().trim()
+        .min(1, {message: "Account name is required"})
+        .max(100, {message: "Account name cannot exceed 100 characters"}),
     type: z.enum(["checking", "savings", "credit", "cash", "investment"]),
-    currency: z.string().min(1, {message: "Currency is required"})
-            .refine(
-                data => SUPPORTED_CODES.includes(data as CurrencyCode),
-                { message: "Currency not supported" },
-            ),
+    currency: z.enum(SUPPORTED_CODES, {
+        error: (issue) => {
+            if(issue.code === "invalid_value") 
+                return { message: "Invalid currency code" }
+            return { message: "Currency code is required" }
+        },
+    }),
     initial_balance: z.number().default(0),
     color: z.string()
         .regex(/^#[0-9a-fA-F]{6}$/, "Must be a valid hex color")
