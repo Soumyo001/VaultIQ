@@ -1,6 +1,7 @@
 import React from 'react'
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import AppSidebar from '@/components/app-sidebar'
+import DbGate from '@/components/guards/db-gate'
 
 const Layout = ({children}: {children: React.ReactNode}) => {
   return (
@@ -8,7 +9,7 @@ const Layout = ({children}: {children: React.ReactNode}) => {
         <AppSidebar/>
         <div className='flex-1 min-w-0 w-full flex flex-col'>
           <SidebarTrigger/>
-          {children}
+          <DbGate>{children}</DbGate>
         </div>
     </SidebarProvider>
   )

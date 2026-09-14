@@ -74,6 +74,16 @@ export const GET = async() => {
             {message: "User account synced", user}, {status: 201}
         );
     } catch (err: any) {
+        // any error at the time of login-sync, revoke the session to force user to re-login and try again
+        try {
+            const { sessionId } = await auth();
+            if(sessionId) {
+                const client = await clerkClient();
+                await client.sessions.revokeSession(sessionId);
+            }
+        } catch (e: any) {
+            console.error('Failed to revoke session:', e);
+        }
         return NextResponse.json(
             {message: `Server error: ${err.message}`}, {status: 500}
         );

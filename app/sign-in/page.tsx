@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Eye, EyeOff, Loader } from "lucide-react";
 import { SigninSchema, SigninSchemaType } from "@/lib/validators/schema_validator/signin.schema";
 import { useSignIn } from "@clerk/nextjs/legacy";
+import { useClerk } from "@clerk/nextjs";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
@@ -25,6 +26,7 @@ const SignIn = () => {
   const [authError, setAuthError] = useState<string|null>(null);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const { signIn, isLoaded, setActive } = useSignIn();
+  const { signOut } = useClerk();
   const {
     register,
     handleSubmit,
@@ -44,7 +46,12 @@ const SignIn = () => {
       const result = await signIn.create({identifier: data.identifier, password: data.password});
       if(result.status === "complete") {
         await setActive({session: result.createdSessionId});
-        await fetch('/api/user', { cache: 'no-store' });
+        const res = await fetch('/api/user', { cache: 'no-store' });
+        if(!res.ok) {
+          await signOut();
+          setAuthError("Couldn't reach your account right now. Please try again later.");
+          return;
+        }
       } else {
         setAuthError(`Authentication failed. please try again. stauts: ${result.status}`);
       }

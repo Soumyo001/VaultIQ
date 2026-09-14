@@ -3,6 +3,9 @@ import mongoose from "mongoose";
 export default async function connect() {
     const DATABASE_URI = process.env.DATABASE_URI;
     const connection_state = mongoose.connection.readyState;
+    if(!DATABASE_URI) {
+        throw new Error("DATABASE_URI is not defined in environment variables");
+    }
 
     switch(connection_state) {
         case 1:
@@ -14,9 +17,10 @@ export default async function connect() {
             break;
         default:
             try {
-                await mongoose.connect(DATABASE_URI!, {
+                await mongoose.connect(DATABASE_URI, {
                     dbName: "vaultiq",
-                    bufferCommands: true
+                    bufferCommands: false,
+                    serverSelectionTimeoutMS: 5000,
                 });
             } catch (err: any) {
                 console.log(`MongoDB connection error: ${err}`);
