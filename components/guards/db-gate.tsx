@@ -6,7 +6,7 @@ const DbGate = async ({ children }: { children: React.ReactNode }) => {
     try {
       await connect();
     } catch (err: any) {
-      console.error("Database connection error:", err.message);
+      console.error(err.message);
       return <DbUnavailable />;
     }
     return <>{children}</>;

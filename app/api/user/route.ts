@@ -74,6 +74,7 @@ export const GET = async() => {
             {message: "User account synced", user}, {status: 201}
         );
     } catch (err: any) {
+        console.log("[GET /api/user]", err.message);
         // any error at the time of login-sync, revoke the session to force user to re-login and try again
         try {
             const { sessionId } = await auth();
@@ -82,10 +83,10 @@ export const GET = async() => {
                 await client.sessions.revokeSession(sessionId);
             }
         } catch (e: any) {
-            console.error('Failed to revoke session:', e);
+            console.error('Failed to revoke session:', e.message);
         }
         return NextResponse.json(
-            {message: `Server error: ${err.message}`}, {status: 500}
+            {message: 'Internal Server error'}, {status: 500}
         );
     }
 }
@@ -176,13 +177,14 @@ export const POST = async(req: Request) => {
             {message: "User account synced", user: syncedUser}, {status: 201}
         );
     } catch (err: any) {
+        console.log("[POST /api/user]", err.message);
         if(err.code === 11000) {
             return NextResponse.json(
                 {message: "User with same data already exists"}, {status: 409}
             );
         }
         return NextResponse.json(
-            {message: `Server error: ${err.message}`}, {status: 500}
+            {message: 'Internal Server error'}, {status: 500}
         );
     }
 }
