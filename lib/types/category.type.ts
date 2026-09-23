@@ -5,6 +5,6 @@ export type CategoryType = {
     type: "income" | "expense";
     icon: string;
     color: string;
-    parent_id?: string | null;
+    parent_id: string | null;
     is_system: boolean;
 }

@@ -6,7 +6,7 @@ export interface ICategory extends Document {
     type: "income" | "expense";
     icon: string;
     color: string;
-    parent_id?: mongoose.Types.ObjectId | null;
+    parent_id: mongoose.Types.ObjectId | null;
     is_system: boolean;
     createdAt: Date;
     updatedAt: Date;
@@ -18,7 +18,7 @@ const CategorySchema = new Schema<ICategory>({
     type: {type: String, enum: ["income", "expense"], required: true},
     icon: {type: String, default: "circle"},
     color: {type: String, default: "#6366f1"},
-    parent_id: {type: Schema.Types.ObjectId, ref: 'Category'},
+    parent_id: {type: Schema.Types.ObjectId, ref: 'Category', default: null},
     is_system: {type: Boolean, default: false},
 },
 {
