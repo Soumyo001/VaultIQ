@@ -1,13 +1,13 @@
-import { CategoryType, UserType, AccountType } from "@/lib/types";
+import { CategoryType, UserType } from "@/lib/types";
 import { CreateCategorySchema } from "@/lib/validators/payload_validator/category.schema";
 import connect from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import User from "@/lib/db/models/user.schema";
-import { Types } from "mongoose";
 import Category from "@/lib/db/models/category.schema";
+import { Types } from "mongoose";
 
-export const POST = async(req: Request) => {
+export const POST = async (req: NextRequest) => {
     try {
         const { userId, isAuthenticated } = await auth();
         if(!userId || !isAuthenticated) {
@@ -35,7 +35,7 @@ export const POST = async(req: Request) => {
         if(parentId) {
             if(!Types.ObjectId.isValid(parentId)) {
                 return NextResponse.json({
-                    message: "Invalid category parent ID"
+                    message: "Invalid parent category"
                 }, {status: 400});
             }
             const parentCategory: CategoryType|null = await Category.findOne({
@@ -49,7 +49,7 @@ export const POST = async(req: Request) => {
             }
             if(parentCategory.type !== data.type) {
                 return NextResponse.json({
-                    message: "Subcategory type must match with parent type"
+                    message: "Parent category type doesn't match with sub-category type"
                 }, {status: 400});
             }
             if(parentCategory.parent_id !== null) {
@@ -61,24 +61,26 @@ export const POST = async(req: Request) => {
         let category: CategoryType|null = await Category.findOne({
             user_id: user._id,
             name: data.name,
-            type: data.type
+            type: data.type,
+            parent_id: parentId
         }).lean<CategoryType>();
         if(category) {
             return NextResponse.json({
-                message: "Conflict. Category with same name and type already exist"
+                message: "Conflict! Category with same name and type already exist"
             }, {status: 409});
         }
 
         category = await Category.create({
             ...data,
             user_id: user._id,
+            parent_id: parentId,
             is_system: false
         });
         return NextResponse.json({
             message: "Category created", category
         }, {status: 201});
     } catch (err: any) {
-        console.log("POST /api/category", err.message);
+        console.log("[POST /api/category]", err.message);
         return NextResponse.json({
             message: "Internal server error"
         }, {status: 500});
