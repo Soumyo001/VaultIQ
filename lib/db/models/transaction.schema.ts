@@ -41,10 +41,10 @@ const TransactionSchema = new Schema<ITransaction>({
     }, // not indexed but might need it if query transactions for a specific category
     type: {type: String, enum: ["income", "expense", "transfer"], required: true},
     amount: {type: Number, required: true, min: 0},
-    description: {type: String, required: true},
+    description: { type: String,  required: true, maxLength: 200},
     date: {type: Date, required: true},
-    tags: {type: [String], default: [] },
-    notes: {type: String},
+    tags: {type: [String], default: []},
+    notes: {type: String, maxlength: 500},
 
     // recurring rule
     recurring_rule_id: {type: Schema.Types.ObjectId, ref: "RecurringRule"},
@@ -54,7 +54,7 @@ const TransactionSchema = new Schema<ITransaction>({
     split_id: {type: Schema.Types.ObjectId, ref: "Split"},
     split_amount: {type: Number, min: 0},
 
-    // transfer
+    // transfer (only for "transfer" type)
     transfer_to_account_id: {type: Schema.Types.ObjectId, ref: "Account"},
 
     // import metadata
