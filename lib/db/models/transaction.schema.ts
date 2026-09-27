@@ -3,7 +3,7 @@ import mongoose, { Schema, models, model, Document } from "mongoose";
 export interface ITransaction extends Document {
     user_id: mongoose.Types.ObjectId;
     account_id: mongoose.Types.ObjectId;
-    category_id: mongoose.Types.ObjectId;
+    category_id?: mongoose.Types.ObjectId;
     type: "income" | "expense" | "transfer";
     amount: number;
     description: string;
@@ -34,7 +34,11 @@ export interface ITransaction extends Document {
 const TransactionSchema = new Schema<ITransaction>({
     user_id: {type: Schema.Types.ObjectId, ref: "User", required: true},
     account_id: {type: Schema.Types.ObjectId, ref: "Account", required: true},
-    category_id: {type: Schema.Types.ObjectId, ref: "Category", required: true}, // not indexed but might need it if query transactions for a specific category
+    category_id: {
+        type: Schema.Types.ObjectId, 
+        ref: "Category", 
+        required: function(this: ITransaction) { return this.type !== "transfer" },
+    }, // not indexed but might need it if query transactions for a specific category
     type: {type: String, enum: ["income", "expense", "transfer"], required: true},
     amount: {type: Number, required: true, min: 0},
     description: {type: String, required: true},

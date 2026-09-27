@@ -2,7 +2,7 @@ export type TransactionType = {
     _id: string;
     user_id: string;
     account_id: string;
-    category_id: string;
+    category_id?: string;
     type: "income" | "expense" | "transfer";
     amount: number;
     description: string;
