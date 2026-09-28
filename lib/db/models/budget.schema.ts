@@ -20,7 +20,7 @@ const BudgetSchema = new Schema<IBudget>({
     month: {type: Number, required: true, min: 1, max: 12},
     year: {type: Number, required: true},
     limit: {type: Number, required: true, min: 0},
-    alert_at: {type: Number, default: 80},
+    alert_at: {type: Number, default: 80, min: 1, max: 100},
     spent: {type: Number, default: 0},
     warning_sent_at: {type: Date},
     exceeded_sent_at: {type: Date}

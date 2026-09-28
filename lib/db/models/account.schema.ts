@@ -1,10 +1,11 @@
 import mongoose, { Schema, models, model, Document } from "mongoose";
+import { CurrencyCode, SUPPORTED_CODES } from "@/lib/utils/currency-util/currency";
 
 export interface IAccount extends Document {
     user_id: mongoose.Types.ObjectId;
     name: string;
     type: "checking"|"savings"|"credit"|"cash"|"investment";
-    currency: string;
+    currency: CurrencyCode;
     initial_balance: number;
     balance: number;
     color: string;
@@ -15,10 +16,10 @@ export interface IAccount extends Document {
 }
 
 const AccountSchema = new Schema<IAccount>({
-    user_id: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+    user_id: { type: Schema.Types.ObjectId, ref: 'User', required: true},
     name: {type: String, required: true, trim: true},
     type: {type: String, enum: ["checking", "savings", "credit", "cash", "investment"], required: true},
-    currency: {type: String, default: "USD"},
+    currency: {type: String, enum: SUPPORTED_CODES, required: true},
     initial_balance: {type: Number, required: true, default: 0},
     balance: {type: Number, default: 0, required: true},
     color: {type: String, default: "#6366f1"},
@@ -30,5 +31,6 @@ const AccountSchema = new Schema<IAccount>({
     collection: 'accounts',
 });
 
+AccountSchema.index({user_id: 1, is_archived: 1});
 const Account = models.Account || model<IAccount>("Account", AccountSchema);
 export default Account;
