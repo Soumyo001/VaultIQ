@@ -12,7 +12,9 @@ export const CreateCategorySchema = z.object({
         }
     }),
     icon: z.string().default("circle"),
-    color: z.string().regex(/^#[0-9a-fA-F]{6}$/).default("#6366f1"),
+    color: z.string()
+        .regex(/^#[0-9a-fA-F]{6}$/, "Must be a valid hex color")
+        .default("#6366f1"),
     parent_id: z.string().nullable().optional()
 });
 
@@ -22,7 +24,9 @@ export const UpdateCategorySchema = z.object({
         .max(50, {message: "Category name cannot exceed 50 characters"})
         .optional(),
     icon: z.string().optional(),
-    color: z.string().regex(/^#[0-9a-fA-F]{6}$/).optional(),
+    color: z.string()
+        .regex(/^#[0-9a-fA-F]{6}$/, "Must be a valid hex color")
+        .optional(),
 });
 
 export type CreateCategorySchemaType = z.infer<typeof CreateCategorySchema>;

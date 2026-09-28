@@ -1,6 +1,5 @@
 import { Types } from "mongoose";
 import z from "zod";
-import { CreateAccountSchema, UpdateAccountSchema } from "./account.schema";
 
 const isValidObjectID = (val: string) => Types.ObjectId.isValid(val);
 
@@ -88,7 +87,10 @@ export const UpdateTransactionSchema = z.object({
     notes: z.string()
         .max(500, {message: "Note cannot exceed 500 characters"})
         .optional(),
+    category_id: z.string().refine(data => isValidObjectID(data), {
+            message: "Invalid category"
+        }).optional(),
 });
 
-export type CreateAccountSchemaType = z.infer<typeof CreateAccountSchema>;
-export type UpdateAccountSchemaType = z.infer<typeof UpdateAccountSchema>;
+export type CreateTransactionSchemaType = z.infer<typeof CreateTransactionSchema>;
+export type UpdateTransactionSchemaType = z.infer<typeof UpdateTransactionSchema>;
