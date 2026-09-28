@@ -8,7 +8,8 @@ export interface IBudget extends Document {
     limit: number;
     alert_at: number;
     spent: number;
-    alert_sent_at?: Date;
+    warning_sent_at?: Date;
+    exceeded_sent_at?: Date;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -21,7 +22,8 @@ const BudgetSchema = new Schema<IBudget>({
     limit: {type: Number, required: true, min: 0},
     alert_at: {type: Number, default: 80},
     spent: {type: Number, default: 0},
-    alert_sent_at: {type: Date}
+    warning_sent_at: {type: Date},
+    exceeded_sent_at: {type: Date}
 },
 {
     timestamps: true,
