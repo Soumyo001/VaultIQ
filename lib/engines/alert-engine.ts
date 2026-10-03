@@ -1,17 +1,20 @@
 import User from "../db/models/user.schema";
 import Budget, { IBudget } from "../db/models/budget.schema";
-import { ICategory } from "../db/models/category.schema";
+import Category from "../db/models/category.schema";
 import { UserType } from "../types";
 import { Resend } from "resend";
 import { buildEmailHtml, buildEmailSubject, buildEmailText, AlertEmailInput, AlertKind } from "./alert-email";
+import { requireEnv } from "../utils/env-util/env";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const RESEND_API_KEY = requireEnv("RESEND_API_KEY", process.env.RESEND_API_KEY);
+const RESEND_EMAIL_FROM = requireEnv("RESEND_EMAIL_FROM", process.env.RESEND_EMAIL_FROM);
+const resend = new Resend(RESEND_API_KEY);
 
 async function sendAlertEmail(user: UserType, input: AlertEmailInput): Promise<boolean> {
     try {
         const { error } = await resend.emails.send({
-            from: 'onboarding@resend.dev',
-            to: "www.soumyo@gmail.com",
+            from: RESEND_EMAIL_FROM,
+            to: user.email,
             subject: buildEmailSubject(input),
             html: buildEmailHtml(input),
             text: buildEmailText(input)
@@ -35,13 +38,21 @@ export default async function checkAndFireAlerts(userId: string, month: number, 
 
         const budgets = await Budget
                         .find({user_id: userId, month, year})
-                        .populate("category_id", "name");
+                        .populate("category_id", "name", Category);
         
         for(const budget of budgets) {
             try {
                 if(budget.limit <= 0) continue;
-                console.log(JSON.stringify(budget.category_id, null, 2));
                 const pct = (budget.spent / budget.limit) * 100;
+                console.log("[DEBUG budget]", {
+                    limit: budget.limit,
+                    spent: budget.spent,
+                    category_id: JSON.stringify(budget.category_id, null, 2),
+                    pct,
+                    alert_at: budget.alert_at,
+                    warning_sent_at: budget.warning_sent_at,
+                    exceeded_sent_at: budget.exceeded_sent_at,
+                });
                 let kind: AlertKind|null = null;
 
                 if(pct >= 100 && !budget.exceeded_sent_at) kind = "exceeded";

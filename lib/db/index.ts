@@ -1,11 +1,13 @@
 import mongoose from "mongoose";
+import "./models"
+import { requireEnv } from "../utils/env-util/env";
 
 export default async function connect() {
-    const DATABASE_URI = process.env.DATABASE_URI;
+    const DATABASE_URI = requireEnv("DATABASE_URI", process.env.DATABASE_URI);
     const connection_state = mongoose.connection.readyState;
-    if(!DATABASE_URI) {
-        throw new Error("DATABASE_URI is not defined in environment variables");
-    }
+    // if(!DATABASE_URI) {
+    //     throw new Error("DATABASE_URI is not defined in environment variables");
+    // }
 
     switch(connection_state) {
         case 1:
@@ -24,7 +26,7 @@ export default async function connect() {
                 });
             } catch (err: any) {
                 console.log(`MongoDB connection error: ${err}`);
-                throw new Error(`MongoDB connection error: ${err}`);
+                throw err;
             }
             break;
     }
